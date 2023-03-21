@@ -24,3 +24,21 @@ axios.get('https://jsonplaceholder.typicode.com/todos').then(data => {
     }
     console.log(count)
 })
+
+function get(){
+    return new Promise((resolve)=>{
+        resolve(
+            axios.get('https://jsonplaceholder.typicode.com/todos')
+        )
+    })
+}
+get().then(value => {
+    let todos = value.data
+    let count = 0;
+    for (let i = 0; i < todos.length ; i++) {
+        if(todos[i].completed === true){
+            count++
+        }
+    }
+    console.log(count);
+})

@@ -38,9 +38,10 @@ function second(){
 //done second
 
 async function main(){
-    let dataFirst = await first()
-    console.log(dataFirst);
     let dataSecond = await second();
     console.log(dataSecond)
+    let dataFirst = await first()
+    console.log(dataFirst);
+
 }
 main().then()
