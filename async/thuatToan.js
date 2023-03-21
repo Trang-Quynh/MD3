@@ -93,8 +93,6 @@
 // for (let i = 0; i < newArr.length; i++) {
 //     console.log(newArr[i])
 // }
-
-
 // let array = [40, 100, 1, 6, 35, 10];
 // array.sort(function(a, b){return b - a});
 // console.log(array)
@@ -103,16 +101,13 @@
 let bai1 =  [40, 100, 1, 6, 35, 10];
     let temp = bai1[0];
     for (let i = 0 ; i < bai1.length - 1; i++) {
-        for (let j = i + 1; j < bai1.length; j++) {
-            if (bai1[i] < bai1[j]) {
-                temp = bai1[j];
-                bai1[j] = bai1[i];
+            if (bai1[i] < bai1[i+1]) {
+                temp = bai1[i+1];
+                bai1[i+1] = bai1[i];
                 bai1[i] = temp;
-            }
         }
 }
 console.log(bai1[1])
-
 
 let mang = [1,2,2,2,1,4];
 function check(arr) {
