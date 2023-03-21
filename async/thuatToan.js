@@ -68,7 +68,7 @@
 // console.log(map)
 //cho mảng a in ra nhưng pt xh 1 lan
 //cho mang a, in ra mang b chua các pt mang a nhung khong lap
-let arr = [1,2,2,3,3,4,5,6,6];
+// let arr = [1,2,2,3,3,4,5,6,6];
 // let map = new Map()
 // for (let i = 0; i < arr.length; i++) {
 //     if(map.has(arr[i]) === true){
@@ -95,10 +95,23 @@ let arr = [1,2,2,3,3,4,5,6,6];
 // }
 
 
-let array = [40, 100, 1, 6, 35, 10];
-array.sort(function(a, b){return b - a});
-console.log(array)
-console.log(array[1]);
+// let array = [40, 100, 1, 6, 35, 10];
+// array.sort(function(a, b){return b - a});
+// console.log(array)
+// console.log(array[1]);
+
+let bai1 =  [40, 100, 1, 6, 35, 10];
+    let temp = bai1[0];
+    for (let i = 0 ; i < bai1.length - 1; i++) {
+        for (let j = i + 1; j < bai1.length; j++) {
+            if (bai1[i] < bai1[j]) {
+                temp = bai1[j];
+                bai1[j] = bai1[i];
+                bai1[i] = temp;
+            }
+        }
+}
+console.log(bai1[1])
 
 
 let mang = [1,2,2,2,1,4];
