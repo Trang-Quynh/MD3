@@ -13,6 +13,7 @@ const server = http.createServer((req, res) => {
                     <td>${people[i].name}</td>
                     <td>${people[i].age}</td>
                     <td>${people[i].sex}</td>
+                    <td><img src="${people[i].image}" style="width:50px; height=50px"></td>
                     <td>
                     <form method="POST">
                     <input name="idDelete" type="hidden" value='${people[i].id}'>
@@ -78,6 +79,8 @@ const server = http.createServer((req, res) => {
                 people[index].name = user.editName;
                 people[index].age = user.editAge;
                 people[index].sex = user.editSex;
+                people[index].image = user.editImage;
+                console.log(user.editImage)
                 fs.writeFileSync('./data/data.json', JSON.stringify(people));
                 res.writeHead(301, {location: '/'})
                 res.end()

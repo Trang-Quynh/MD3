@@ -10,10 +10,14 @@
 <body>
 <!--create-->
 <form method="post">
-    <input type="text" name="id" placeholder="id">
-    <input type="text" name="name" placeholder="name">
-    <input type="text" name="age" placeholder="age">
-    <input type="text" name="sex" placeholder="gender">
+    <input type="text" name="id" placeholder="id" required>
+    <input type="text" name="name" placeholder="name" required>
+    <input type="text" name="age" placeholder="age" required>
+    <input type="text" name="sex" placeholder="gender" required>
+<!--    chứa đường link đến file image -->
+    <input type="hidden" name="image" id="image">
+<!--    nhấn để lấy đường link từ storage firebase -->
+    <input type="file" id="fileButton" onchange="uploadImage(event)" required>
     <button type="submit">Submit</button>
 </form>
 <h1>Edit</h1>
@@ -27,6 +31,7 @@
         <th scope="col">Name</th>
         <th scope="col">Age</th>
         <th scope="col">Gender</th>
+        <th scope="col">Image</th>
         <th colspan="2">Action</th>
     </tr>
     </thead>
@@ -34,5 +39,58 @@
     {people}
     </tbody>
 </table>
+
+
+<!--uploadFile-->
+<div id="imgDiv"></div>
+<script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCJe0l2QrmIhsjsNI_hn-aKNF7oY0_ZnxE",
+        authDomain: "crud-8adf5.firebaseapp.com",
+        projectId: "crud-8adf5",
+        storageBucket: "crud-8adf5.appspot.com",
+        messagingSenderId: "405629308956",
+        appId: "1:405629308956:web:0b272898ea071b59c34fd9",
+        measurementId: "G-QJX462K990"
+    };
+    firebase.initializeApp(firebaseConfig);
+</script>
+
+<script type="text/javascript">
+    function uploadImage(e) {
+        let fbBucketName = 'images';
+        let uploader = document.getElementById('uploader');
+        let file = e.target.files[0];
+        let storageRef = firebase.storage().ref(`${fbBucketName}/${file.name}`);
+        let uploadTask = storageRef.put(file);
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+            function (snapshot) {
+                uploader.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED:
+                        break;
+                    case firebase.storage.TaskState.RUNNING:
+                        break;
+                }
+            }, function (error) {
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        break;
+                    case 'storage/canceled':
+                        break;
+                    case 'storage/unknown':
+                        break;
+                }
+            }, function () {
+                let downloadURL = uploadTask.snapshot.downloadURL;
+                document.getElementById('imgDiv').innerHTML = `<img src="${downloadURL}" alt="">`
+                // localStorage.setItem('image', downloadURL);
+                // alert(downloadURL)
+                document.getElementById('image').value = downloadURL
+            });
+    }
+</script>
 </body>
 </html>
