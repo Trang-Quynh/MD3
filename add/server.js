@@ -1,56 +1,99 @@
 const http = require('http');
 const fs = require('fs');
 const qs = require('qs');
-
 const server = http.createServer((req, res) => {
     if (req.method === 'GET') {
-        fs.readFile('views/index.html', 'utf-8', (err, indexHtml) => {
-            if (err) {
-                console.log(err)
+        fs.readFile('./views/index.html', 'utf8', (err, dataHtml) => {
+            let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+            let html = '';
+            for (let i = 0; i < people.length; i++) {
+                html += `
+                 <tr>
+                    <th scope="row">${people[i].id}</th>
+                    <td>${people[i].name}</td>
+                    <td>${people[i].age}</td>
+                    <td>${people[i].sex}</td>
+                    <td>
+                    <form method="POST">
+                    <input name="idDelete" type="hidden" value='${people[i].id}'>
+                    <button type="submit">Delete</button>
+                    </form>
+                    </td>
+                    <td>
+                    <form method="POST">
+                    <input name="idUpdate" type="hidden" value='${people[i].id}'>
+                    <button type="submit">Update</button>
+                    </form>
+                    </td>
+                 </tr>
+                `
             }
-            let listProduct = JSON.parse(fs.readFileSync('data/data.json', 'utf-8'));
-            let html = ''
-            for (let i = 0; i < listProduct.length; i++) {
-                html += `<h1>${listProduct[i].id} : ${listProduct[i].name}-${listProduct[i].price}
-                <form method="post"><input type="hidden" name="idDelete" value="${listProduct[i].id}"><button type="submit">Xóa</button></form></h1>`
-            }
-            indexHtml = indexHtml.replace('{list-product}', html);
-            res.write(indexHtml);
+            dataHtml = dataHtml.replace('{people}', html);
+            res.write(dataHtml);
             res.end();
         })
     }
     if (req.method === 'POST') {
         let data = ''
-        req.on('data', chunk => {
-            data += chunk;
-        });
+        req.on('data', (chunk) => {
+            data = data + chunk;
+        })
         req.on('end', () => {
-            let dataForm = qs.parse(data);
-            if (dataForm.idDelete) {
-                let listProduct = JSON.parse(fs.readFileSync('data/data.json', 'utf-8'));
-                console.log(listProduct + 'trang')
-
-                for (let i = 0; i < listProduct.length; i++) {
-                    if (dataForm.idDelete === listProduct[i].id) {
-                        listProduct.splice(i, 1);
-                        break;
+            let user = qs.parse(data);
+            if (user.idDelete != null) {
+                let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+                let index = people.findIndex(item => {
+                    return item.id === user.idDelete
+                });
+                people.splice(index, 1);
+                fs.writeFileSync('./data/data.json', JSON.stringify(people));
+                res.writeHead(301, {location: '/'})
+                res.end()
+            } else if (user.idUpdate != null) {
+                let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+                let index = people.findIndex(item => {
+                    return item.id === user.idUpdate;
+                });
+                let userEdit = people[index];
+                fs.readFile('./views/edit.html', 'utf8', (err, data)=>{
+                    data = data.replace('{editId}',userEdit.id)
+                    data = data.replace('{editName}',userEdit.name)
+                    data = data.replace('{editAge}',userEdit.age)
+                    data = data.replace('{editSex}',userEdit.sex);
+                    res.writeHead(200,{'Content-Type':'text/html'});
+                    res.write(data);
+                    res.end()
+                })
+            } else if (user.editId != null) {
+                let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+                console.log(people)
+                console.log(user)
+                let index = -1;
+                for (let i = 0; i < people.length; i++) {
+                    if(people[i].id === user.editId){
+                        index = i;
                     }
                 }
-                console.log(JSON.stringify(listProduct))
-                fs.writeFileSync('data/data.json', JSON.stringify(listProduct));
-                res.writeHead(301, {'location': '/'})
-                res.end();
+                console.log(index)
+                people[index].name = user.editName;
+                people[index].age = user.editAge;
+                people[index].sex = user.editSex;
+                fs.writeFileSync('./data/data.json', JSON.stringify(people));
+                res.writeHead(301, {location: '/'})
+                res.end()
             } else {
-                let product = qs.parse(data);
-                let listProduct = JSON.parse(fs.readFileSync('data/data.json', 'utf-8'));
-                listProduct.push(product);
-                fs.writeFileSync('data/data.json', JSON.stringify(listProduct));
-                res.writeHead(301, {'location': '/'})
-                res.end();
+                let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+                people.push(user)
+                fs.writeFileSync('./data/data.json', JSON.stringify(people));
+                res.writeHead(301, {location: '/'})
+                res.end()
             }
+
         })
     }
-});
-server.listen(3000, () => {
-    console.log('Server is running!')
 })
+
+server.listen(3001, () => {
+    console.log('server is running')
+})
+
