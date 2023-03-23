@@ -33,8 +33,7 @@ const server = http.createServer((req, res) => {
             res.write(dataHtml);
             res.end();
         })
-    }
-    if (req.method === 'POST') {
+    }else{
         let data = ''
         req.on('data', (chunk) => {
             data = data + chunk;
@@ -67,8 +66,6 @@ const server = http.createServer((req, res) => {
                 })
             } else if (user.editId != null) {
                 let people = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
-                console.log(people)
-                console.log(user)
                 let index = -1;
                 for (let i = 0; i < people.length; i++) {
                     if(people[i].id === user.editId){
